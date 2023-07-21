@@ -11,15 +11,24 @@ public class Player : MonoBehaviour
     [SerializeField] private float strength = 5f;
     private Animator _animator;
     [SerializeField] private GameObject gameManager;
+
     private void Start()
     {
         _animator = GetComponent<Animator>();
     }
 
-    
+
     private void Update()
     {
         Movement();
+    }
+
+    private void OnEnable()
+    {
+        Vector3 position = transform.position;
+        position.y = 0f;
+        transform.position = position;
+        _direction = Vector3.zero;
     }
 
     private void Movement()
@@ -37,25 +46,34 @@ public class Player : MonoBehaviour
 
             if (touch.phase == TouchPhase.Began)
             {
-              //  _animator.SetBool("isFly", true);
+                //  _animator.SetBool("isFly", true);
 
                 _direction = Vector3.up * strength;
             }
         }
-        _animator.SetBool("isFalling",true);
+
+        StartCoroutine(FlayingRoutine());
+
         _direction.y += _gravity * Time.deltaTime;
         transform.position += _direction * Time.deltaTime;
     }
 
-    private void OnTriggerEnter2D(Collider2D other){
+    IEnumerator FlayingRoutine()
+    {
+        yield return new WaitForSeconds(0.20f);
+        _animator.SetBool("isFly", false);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
         if (other.gameObject.tag == "Obstacle")
         {
-           gameManager.GetComponent<GameManager>().GameOver(this.gameObject); 
+            gameManager.GetComponent<GameManager>().GameOver();
+            _animator.SetBool("isFalling", true);
         }
         else if (other.gameObject.tag == "Scoring")
         {
             gameManager.GetComponent<GameManager>().IncreaseScore();
         }
-        
     }
 }
