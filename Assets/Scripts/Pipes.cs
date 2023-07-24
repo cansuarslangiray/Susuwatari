@@ -5,7 +5,15 @@ using UnityEngine;
 
 public class Pipes : MonoBehaviour
 {
-   [SerializeField] private float speed = 5f;
+   [SerializeField]
+   private float speed = 5f;
+
+   public float Speed
+   {
+      get => speed;
+      set => speed = value;
+   }
+
    private float _leftEdge;
 
    private void Start()
